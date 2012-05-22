@@ -25,9 +25,28 @@
         [_calendarView showInView:self.view];
     }
 }
+- (NSString*) stringFromFomate:(NSDate*) date formate:(NSString*) formate 
+{
+	NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
+	[formatter setDateFormat:formate];
+	NSString *str = [formatter stringFromDate:date];
+	[formatter release];
+	return str;
+}
 - (void) calendarViewDidSelectDay:(CalendarView*)calendarView calDay:(CalDay*)calDay
 {
-    ITTDINFO(@"selected day %@", calDay);
+    NSArray *selectedDates = calendarView.selectedDateArray;
+    if (calendarView.allowsMultipleSelection) 
+    {
+        for (NSDate *date in selectedDates) 
+        {
+            NSLog(@"selected date %@", [self stringFromFomate:date formate:@"yyyy-MM-dd"]);
+        }        
+    }
+    else
+    {
+        ITTDINFO(@"selected date %@", [self stringFromFomate:calendarView.selectedDate formate:@"yyyy-MM-dd"]);        
+    }
 }
 - (void)viewDidLoad
 {
@@ -38,6 +57,7 @@
     _calendarView.dataSource = dataSource;
     _calendarView.delegate = self;
     _calendarView.frame = CGRectMake(8, 40, 309, 301);
+    _calendarView.allowsMultipleSelection = TRUE;
     [_calendarView showInView:self.view];
 }
 

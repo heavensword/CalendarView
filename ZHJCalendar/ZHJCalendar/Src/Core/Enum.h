@@ -31,4 +31,9 @@ typedef enum
     WeekDaySunday
 }WeekDay;
 
+typedef struct 
+{
+    NSInteger row;
+    NSInteger column;
+}GridIndex;
 #endif

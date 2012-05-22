@@ -10,11 +10,12 @@
 
 @implementation CalendarGridView
 
+@synthesize row = _row;
+@synthesize column = _column;
 @synthesize selected = _selected;
 @synthesize calDay = _calDay;
 @synthesize delegate = _delegate;
 @synthesize identifier = _identifier;
-@synthesize multipleSelection;
 @synthesize selectedEanable = _selectedEanable;
 
 - (id)initWithFrame:(CGRect)frame

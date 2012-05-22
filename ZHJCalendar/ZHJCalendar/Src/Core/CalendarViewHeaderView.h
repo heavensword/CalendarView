@@ -18,6 +18,9 @@
 
 @property (nonatomic, retain) id<CalendarViewHeaderViewDelegate> delegate;
 
+@property (nonatomic, retain) IBOutlet UIButton *previousMonthButton;
+@property (nonatomic, retain) IBOutlet UIButton *nextMonthButton;
+
 @property (nonatomic, retain) NSString *title;
 
 + (CalendarViewHeaderView*) viewFromNib;

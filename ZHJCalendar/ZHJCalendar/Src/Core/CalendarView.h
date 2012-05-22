@@ -13,6 +13,7 @@
 #import "CalendarGridView.h"
 #import "CalendarViewHeaderView.h"
 #import "CalendarViewFooterView.h"
+#import "CalendarScrollView.h"
 
 #define CALENDAR_VIEW_HEIGHT_WITHOUT_FOOTER_VIEW 251
 #define CALENDAR_VIEW_HEIGHT                     301
@@ -21,10 +22,19 @@
 @class CalMonth;
 
 @interface CalendarView : UIView<CalendarGridViewDelegate, 
-CalendarViewHeaderViewDelegate, CalendarViewFooterViewDelegate>
+CalendarViewHeaderViewDelegate, CalendarViewFooterViewDelegate, CalendarScrollViewDelegate>
 {
+
+    bool                    **_selectedIndicesMatrix;    
+    bool                    **_foucsMatrix;    
+    
+    BOOL                    _moved;    
     BOOL                    _firstLayout;
+    BOOL                    _allowsMultipleSelection;
+    
     PeriodType              _selectedPeriod;    
+    
+    GridIndex               _previousSelectedIndex;
     
     CGSize                  _gridSize;
     
@@ -39,15 +49,14 @@ CalendarViewHeaderViewDelegate, CalendarViewFooterViewDelegate>
     CalMonth                *_calMonth;
     
     CalendarViewHeaderView  *_calendarHeaderView;  
-    CalendarViewFooterView  *_calendarFooterView;
-    
-    CalendarGridView        *_selectedGridView;
+    CalendarViewFooterView  *_calendarFooterView;    
     
     UIView                  *_parentView;
     
-    NSMutableArray          *_gridViewsArray;
+    NSMutableArray          *_gridViewsArray;                   //two-dimensional array
     NSMutableArray          *_monthGridViewsArray;
     NSMutableDictionary     *_recyledGridSetDic;    
+    NSMutableDictionary     *_selectedGridViewIndicesDic;
     
     id<CalendarViewDataSource>  _dataSource;
     id<CalendarViewDelegate>    _delegate;
@@ -56,7 +65,12 @@ CalendarViewHeaderViewDelegate, CalendarViewFooterViewDelegate>
 @property (nonatomic, assign) id<CalendarViewDelegate>   delegate;
 
 @property (nonatomic, assign) PeriodType selectedPeriod;    
+/*
+ * default is FALSE
+ */
+@property (nonatomic, assign) BOOL allowsMultipleSelection;
 @property (nonatomic, assign) BOOL appear;
+
 @property (nonatomic, assign) CGSize gridSize;
 
 /*
@@ -79,6 +93,11 @@ CalendarViewHeaderViewDelegate, CalendarViewFooterViewDelegate>
  * The selected date on calendar view
  */
 @property (retain, nonatomic, readonly) NSDate *selectedDate;
+/*
+ * nil will be returned is allowsMultipleSelection is FALSE. 
+ * Otherwise, an autorelease array of NSDate will be returned.
+ */
+@property (retain, nonatomic, readonly) NSArray *selectedDateArray;
 
 - (void) nextMonth;
 - (void) previousMonth;

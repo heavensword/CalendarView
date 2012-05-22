@@ -60,6 +60,7 @@
 		E74B7F331536659700315E1A /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = E74B7F321536659700315E1A /* ViewController.m */; };
 		E74B7F361536659700315E1A /* ViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = E74B7F341536659700315E1A /* ViewController.xib */; };
 		E77EF3CB1537D38B0026DDB5 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E77EF3CA1537D38B0026DDB5 /* QuartzCore.framework */; };
+		E7B900BF156A4099006924FA /* CalendarScrollView.m in Sources */ = {isa = PBXBuildFile; fileRef = E7B900BE156A4099006924FA /* CalendarScrollView.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -138,6 +139,8 @@
 		E74B7F351536659700315E1A /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/ViewController.xib; sourceTree = "<group>"; };
 		E74B7F4315366BB700315E1A /* ITTDebug.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ITTDebug.h; sourceTree = "<group>"; };
 		E77EF3CA1537D38B0026DDB5 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
+		E7B900BD156A4098006924FA /* CalendarScrollView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CalendarScrollView.h; sourceTree = "<group>"; };
+		E7B900BE156A4099006924FA /* CalendarScrollView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CalendarScrollView.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -213,6 +216,8 @@
 				E721EAA41567451F009DF710 /* CalendarViewHeaderView.h */,
 				E721EAA51567451F009DF710 /* CalendarViewHeaderView.m */,
 				E721EAA61567451F009DF710 /* Enum.h */,
+				E7B900BD156A4098006924FA /* CalendarScrollView.h */,
+				E7B900BE156A4099006924FA /* CalendarScrollView.m */,
 			);
 			path = Core;
 			sourceTree = "<group>";
@@ -418,6 +423,7 @@
 				E721EACE1567451F009DF710 /* CalDay.m in Sources */,
 				E721EACF1567451F009DF710 /* CalMonth.m in Sources */,
 				E721EAD01567451F009DF710 /* DateUtil.m in Sources */,
+				E7B900BF156A4099006924FA /* CalendarScrollView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -448,7 +454,7 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Scott Lee (DAJ23Z84KU)";
 				COPY_PHASE_STRIP = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
@@ -463,6 +469,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 5.1;
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "41ACC2B2-C355-4ACB-B2D3-7B59A5E1EAC8";
 				SDKROOT = iphoneos;
 			};
 			name = Debug;
@@ -492,6 +499,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "ZHJCalendar/ZHJCalendar-Prefix.pch";
 				INFOPLIST_FILE = "ZHJCalendar/ZHJCalendar-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 4.0;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = app;
 			};
@@ -503,6 +511,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "ZHJCalendar/ZHJCalendar-Prefix.pch";
 				INFOPLIST_FILE = "ZHJCalendar/ZHJCalendar-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 4.0;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = app;
 			};

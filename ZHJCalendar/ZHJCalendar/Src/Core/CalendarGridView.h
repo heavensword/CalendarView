@@ -15,19 +15,25 @@
 {
     BOOL        _selected;
     BOOL        _selectedEanable;
+    
+    NSUInteger  _row;
+    NSUInteger  _column;
+    
     NSString    *_identifier;
+    
     CalDay      *_calDay;
     
     id<CalendarGridViewDelegate> _delegate;
 }
 
 @property (nonatomic, assign) id<CalendarGridViewDelegate> delegate;
+
 @property (nonatomic, assign) BOOL selected;
 @property (nonatomic, assign) BOOL selectedEanable;
-/*
- * coming soon
- */
-@property (nonatomic, assign) BOOL multipleSelection;
+
+@property (nonatomic, assign) NSUInteger row;
+@property (nonatomic, assign) NSUInteger column;
+
 @property (nonatomic, retain) NSString *identifier;
 @property (nonatomic, retain) CalDay *calDay;
 

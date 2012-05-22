@@ -12,9 +12,13 @@
 
 @synthesize title = _title;
 @synthesize delegate = _delegate;
+@synthesize previousMonthButton;
+@synthesize nextMonthButton;
 
 - (void) dealloc
 {
+    [previousMonthButton release];
+    [nextMonthButton release];        
     _delegate = nil;
     [_title release];
     _title = nil;

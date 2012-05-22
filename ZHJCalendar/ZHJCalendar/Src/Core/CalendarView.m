@@ -24,15 +24,30 @@
 @property (retain, nonatomic) IBOutlet UIView *weekHintView;
 @property (retain, nonatomic) IBOutlet UIView *headerView;
 @property (retain, nonatomic) IBOutlet UIView *footerView;
-@property (retain, nonatomic) IBOutlet UIScrollView *gridScrollView;
+@property (retain, nonatomic) IBOutlet CalendarScrollView *gridScrollView;
 
 - (void) initParameters;
+- (void) removeGridViewAtRow:(NSUInteger) row column:(NSUInteger)column;
+- (void) addGridViewAtRow:(CalendarGridView*)gridView row:(NSUInteger) row column:(NSUInteger)column;
 - (void) layoutGridCells;
 - (void) recyleAllGridViews;
+- (void) resetSelectedIndicesMatrix;
+- (void) resetFoucsMatrix;
+- (void) updateSelectedGridViewState;
+
+- (BOOL) isGridViewSelectedEnableAtRow:(NSUInteger)row column:(NSUInteger) column;
+
+- (CalendarGridView*) getGridViewAtRow:(NSUInteger) row column:(NSUInteger)column;
+
+- (NSUInteger) getRows;
+- (NSUInteger) getMonthDayAtRow:(NSUInteger)row column:(NSUInteger)column;
+
 - (NSString*) findMonthDescription;
 - (NSArray*) findWeekTitles;
+
 - (CalendarViewHeaderView*) findHeaderView;
 - (CalendarViewFooterView*) findFooterview;
+
 - (CalendarGridView*) gridViewAtRow:(NSUInteger)row column:(NSUInteger)column calDay:(CalDay*)calDay;
 - (CalendarGridView*) disableGridViewAtRow:(NSUInteger)row column:(NSUInteger)column calDay:(CalDay*)calDay;
 - (CGRect) getFrameForRow:(NSUInteger)row column:(NSUInteger)column;
@@ -42,6 +57,7 @@
 @implementation CalendarView
 
 @synthesize appear;
+@synthesize selectedDateArray;
 @synthesize selectedDate;
 @synthesize selectedPeriod = _selectedPeriod;
 @synthesize calMonth = _calMonth;
@@ -55,8 +71,9 @@
 @synthesize headerView = _headerView;
 @synthesize footerView = _footerView;
 @synthesize gridScrollView = _gridScrollView;
-
+@synthesize allowsMultipleSelection = _allowsMultipleSelection;
 @synthesize gridSize;
+
 - (void) initParameters
 {
     _gridSize = CGSizeMake(39, 31);    
@@ -67,6 +84,41 @@
     _monthGridViewsArray = [[NSMutableArray alloc] init];  
     _recyledGridSetDic = [[NSMutableDictionary alloc] init];
     self.gridScrollView.backgroundColor = [UIColor whiteColor];
+    
+    NSUInteger n = 6;
+    _selectedIndicesMatrix = (bool**)malloc(sizeof(bool*)*n);
+    _foucsMatrix  = (bool**)malloc(sizeof(bool*)*n);
+    for (NSUInteger i = 0; i < n; i++) 
+    {
+        _selectedIndicesMatrix[i] = malloc(sizeof(bool)*NUMBER_OF_DAYS_IN_WEEK);
+        memset(_selectedIndicesMatrix[i], FALSE, NUMBER_OF_DAYS_IN_WEEK);
+
+        _foucsMatrix[i] = malloc(sizeof(bool)*NUMBER_OF_DAYS_IN_WEEK);
+        memset(_foucsMatrix[i], FALSE, NUMBER_OF_DAYS_IN_WEEK);
+
+    }
+    for (NSUInteger index = 0; index < n; index++) 
+    {
+        NSMutableArray *rows = [[NSMutableArray alloc] init];
+        [_gridViewsArray addObject:rows];
+        [rows release];
+    }    
+}
+- (void) freeMatrix
+{
+    NSInteger n = 6;
+    for (int i = 0; i < n; i++) 
+    {
+        free(_selectedIndicesMatrix[i]);
+        _selectedIndicesMatrix[i] = NULL;
+        free(_foucsMatrix[i]);
+        _foucsMatrix[i] = NULL;
+    }    
+    free(_selectedIndicesMatrix);
+    _selectedIndicesMatrix = NULL;
+    free(_foucsMatrix);
+    _foucsMatrix = NULL;
+    
 }
 - (void) setDate:(NSDate *)date
 {
@@ -108,6 +160,8 @@
         _calMonth = nil;
     }
     _calMonth = [calMonth retain];
+    [_selectedDay release];
+    _selectedDay = nil;    
     if (_date)
     {
         _selectedDay = [[CalDay alloc] initWithDate:_date];
@@ -118,6 +172,42 @@
     }
     _firstLayout = TRUE;    
     [self setNeedsLayout];
+}
+- (NSUInteger) getRows
+{
+    NSUInteger offsetRow = [[_calMonth firstDay] getWeekDay] - 1;
+    NSUInteger row = (offsetRow + _calMonth.days - 1)/NUMBER_OF_DAYS_IN_WEEK;
+    return row + 1;    
+}
+- (NSUInteger) getMonthDayAtRow:(NSUInteger)row column:(NSUInteger)column
+{
+    NSUInteger offsetRow = [[_calMonth firstDay] getWeekDay] - 1;            
+    NSUInteger day = (row * NUMBER_OF_DAYS_IN_WEEK + 1 - offsetRow) + column;
+    return day;
+}
+- (BOOL) isValidGridViewIndex:(GridIndex)index
+{
+    BOOL valid = TRUE;
+    if (index.column < 0||
+        index.row < 0||
+        index.column >= NUMBER_OF_DAYS_IN_WEEK||
+        index.row >= [self getRows]) 
+    {
+        valid = FALSE;
+    }
+    return valid;
+}
+- (GridIndex) getGridViewIndex:(CalendarScrollView*)calendarScrollView touches:(NSSet*)touches
+{
+    UITouch *touch = [touches anyObject];
+    CGPoint location = [touch locationInView:calendarScrollView];
+    GridIndex index;
+    NSInteger row = (location.y - MARGIN_TOP + PADDING_VERTICAL)/(PADDING_VERTICAL + _gridSize.height);
+    NSInteger column = (location.x - MARGIN_LEFT + PADDING_HORIZONTAL)/(PADDING_HORIZONTAL + _gridSize.width);
+    ITTDINFO(@"row %d column %d", row, column);
+    index.row = row;
+    index.column = column;
+    return index;
 }
 - (NSString*) findMonthDescription
 {
@@ -151,21 +241,86 @@
      * recyled all grid views
      */    
     NSMutableSet *recyledGridSet;
-    for (CalendarGridView *gridView in _gridViewsArray) 
+    for (NSMutableArray *rowGridViewsArray in _gridViewsArray) 
     {
-        recyledGridSet = [_recyledGridSetDic objectForKey:gridView.identifier];
-        if (!recyledGridSet) 
-        {    
-            recyledGridSet = [[NSMutableSet alloc] init];
-            [_recyledGridSetDic setObject:recyledGridSet forKey:gridView.identifier];
-            [recyledGridSet release];
-        }
-        gridView.selected = FALSE;
-        [gridView removeFromSuperview];
-        [recyledGridSet addObject:gridView];
+        for (CalendarGridView *gridView in rowGridViewsArray) 
+        {
+            recyledGridSet = [_recyledGridSetDic objectForKey:gridView.identifier];
+            if (!recyledGridSet) 
+            {    
+                recyledGridSet = [[NSMutableSet alloc] init];
+                [_recyledGridSetDic setObject:recyledGridSet forKey:gridView.identifier];
+                [recyledGridSet release];
+            }
+            gridView.selected = FALSE;
+            [gridView removeFromSuperview];
+            [recyledGridSet addObject:gridView];
+        }     
+        [rowGridViewsArray removeAllObjects];
     }
-    [_gridViewsArray removeAllObjects];    
     [_monthGridViewsArray removeAllObjects];
+}
+- (CalendarGridView*) getGridViewAtRow:(NSUInteger) row column:(NSUInteger)column
+{
+    CalendarGridView *gridView = nil;
+    NSMutableArray *rowGridViewsArray = [_gridViewsArray objectAtIndex:row];
+    gridView = [rowGridViewsArray objectAtIndex:column];
+    return gridView;
+}
+- (BOOL) isGridViewSelectedEnableAtRow:(NSUInteger)row column:(NSUInteger) column
+{
+    BOOL selectedEnable = TRUE;    
+    NSUInteger day = [self getMonthDayAtRow:row column:column];
+    if (day < 1 || day > _calMonth.days)
+    {
+        selectedEnable = FALSE;
+    }
+    else
+    {
+        CalDay *calDay = [_calMonth calDayAtDay:day];
+        ITTDINFO(@"day is %d", day);            
+        if([self isEarlyerMinimumDay:calDay] || [self isAfterMaximumDay:calDay])
+        {
+            selectedEnable = FALSE;
+        }        
+    }
+    return selectedEnable;
+}
+- (void) resetSelectedIndicesMatrix
+{
+    NSInteger n = 6;
+    for (NSInteger row = 0; row < n; row++) 
+    {
+        memset(_selectedIndicesMatrix[row], FALSE, NUMBER_OF_DAYS_IN_WEEK);
+        memset(_foucsMatrix[row], FALSE, NUMBER_OF_DAYS_IN_WEEK);                
+    }
+}
+- (void) resetFoucsMatrix
+{
+    NSInteger n = 6;
+    for (NSInteger row = 0; row < n; row++) 
+    {
+        memset(_foucsMatrix[row], FALSE, NUMBER_OF_DAYS_IN_WEEK);                
+    }    
+}
+/*
+ * update grid state
+ */
+- (void) updateSelectedGridViewState
+{
+    CalendarGridView *gridView = nil;
+    NSInteger rows = [self getRows];
+    for (NSInteger row = 0; row < rows; row++) 
+    {
+        for (NSInteger column = 0; column < NUMBER_OF_DAYS_IN_WEEK; column++) 
+        {
+            gridView = [self getGridViewAtRow:row column:column];
+            if (!(gridView.selected & _selectedIndicesMatrix[row][column])) 
+            {
+                gridView.selected = _selectedIndicesMatrix[row][column];                
+            }
+        }
+    }
 }
 - (BOOL) isEarlyerMinimumDay:(CalDay*) calDay
 {
@@ -192,6 +347,36 @@
     ITTDINFO(@"calday %@ is after maximuday %@ %d", calDay, _maximumDay, after);
     return after;
     
+}
+- (void) removeGridViewAtRow:(NSUInteger) row column:(NSUInteger)column
+{
+    NSMutableArray *rowGridViewsArray = [_gridViewsArray objectAtIndex:row];
+    if (column < [rowGridViewsArray count]) 
+    {
+        [rowGridViewsArray removeObjectAtIndex:column];        
+    }
+}
+- (void) addGridViewAtRow:(CalendarGridView*)gridView row:(NSUInteger) row 
+                   column:(NSUInteger)column
+{
+    NSMutableArray *rowGridViewsArray = [_gridViewsArray objectAtIndex:row];
+    NSInteger count = [rowGridViewsArray count];
+    if (column > count||column < count)
+    {      
+        if (column > count) 
+        {
+            NSInteger offsetCount = column - count + 1;
+            for (NSInteger offset = 0; offset < offsetCount; offset++) 
+            {
+                [rowGridViewsArray addObject:[NSNull null]];
+            }            
+        }
+        [rowGridViewsArray replaceObjectAtIndex:column withObject:gridView];        
+    }    
+    else if (column == count) 
+    {        
+        [rowGridViewsArray insertObject:gridView atIndex:column];
+    }
 }
 - (void) layoutGridCells
 {
@@ -220,11 +405,13 @@
             gridView = [self disableGridViewAtRow:row column:column calDay:calDay];
             gridView.delegate = self;
             gridView.calDay = calDay;
+            gridView.row = row;
+            gridView.column = column;            
             frame = [self getFrameForRow:row column:column];        
             gridView.frame = frame;
             [gridView setNeedsLayout];
             [self.gridScrollView addSubview:gridView];   
-            [_gridViewsArray addObject:gridView];                   
+            [self addGridViewAtRow:gridView row:row column:column];
             count--;
         }
     }    
@@ -237,20 +424,21 @@
         gridView = [self gridViewAtRow:row column:column calDay:calDay];
         gridView.delegate = self;
         gridView.calDay = calDay;
-        gridView.selectedEanable = (![self isEarlyerMinimumDay:calDay] && ![self isAfterMaximumDay:calDay]);
+        gridView.row = row;
+        gridView.column = column;
+        gridView.selectedEanable = ([self isEarlyerMinimumDay:calDay] || [self isAfterMaximumDay:calDay]) ? FALSE:TRUE;
         if ([calDay isEqualToDay:self.selectedDay]) 
         {
             hasSelectedDay = TRUE;
             gridView.selected = TRUE;
-            _selectedGridView = gridView;
-            ITTDINFO(@"selected day %@", calDay);
+            _selectedIndicesMatrix[row][column] = TRUE;
         }
         frame = [self getFrameForRow:row column:column];        
         gridView.frame = frame;
         [gridView setNeedsLayout];
         [self.gridScrollView addSubview:gridView];   
         [_monthGridViewsArray addObject:gridView];
-        [_gridViewsArray addObject:gridView];       
+        [self addGridViewAtRow:gridView row:row column:column];
         if (CGRectGetMaxX(frame) > maxWidth) 
         {
             maxWidth = CGRectGetMaxX(frame);
@@ -262,10 +450,11 @@
     }
     if (!hasSelectedDay) 
     {
-        _selectedGridView = [_monthGridViewsArray objectAtIndex:0];        
+        CalendarGridView *selectedGridView = [_monthGridViewsArray objectAtIndex:0];     
+        _selectedIndicesMatrix[selectedGridView.row][selectedGridView.column] = TRUE;        
+        selectedGridView.selected = TRUE;
     }
-    self.gridScrollView.contentSize = CGSizeMake(maxWidth, maxHeight + 5);    
-    
+    self.gridScrollView.contentSize = CGSizeMake(maxWidth, maxHeight + 5);        
     /*
      * layout grid view after selected month on calendar view
      */
@@ -281,11 +470,13 @@
             gridView = [self disableGridViewAtRow:row column:column calDay:calDay];
             gridView.delegate = self;
             gridView.calDay = calDay;
+            gridView.row = row;
+            gridView.column = column;
             frame = [self getFrameForRow:row column:column];        
             gridView.frame = frame;
             [gridView setNeedsLayout];
             [self.gridScrollView addSubview:gridView];   
-            [_gridViewsArray addObject:gridView];                   
+            [self addGridViewAtRow:gridView row:row column:column];
         }
     }    
 }
@@ -390,7 +581,9 @@
     {      
         options = UIViewAnimationTransitionCurlDown;        
     }
-    [UIView animateWithDuration:0.5 animations:^{
+    _calendarHeaderView.nextMonthButton.enabled = FALSE;
+    _calendarHeaderView.previousMonthButton.enabled = FALSE;    
+    [UIView animateWithDuration:0.3 animations:^{
         [UIView setAnimationTransition:options forView:self.gridScrollView cache:TRUE]; 
         if (next) 
         {
@@ -405,16 +598,19 @@
      {
          if (finished) 
          {
-            
+             _calendarHeaderView.nextMonthButton.enabled = TRUE;
+             _calendarHeaderView.previousMonthButton.enabled = TRUE;                
          }
      }];
 }
 - (void) nextMonth
 {
+    [self resetSelectedIndicesMatrix];
     [self animationChangeMonth:TRUE];    
 }
 - (void) previousMonth
 {
+    [self resetSelectedIndicesMatrix];    
     [self animationChangeMonth:FALSE];    
 }
 - (void) layoutSubviews
@@ -507,25 +703,30 @@
 }
 - (void) swipe:(UISwipeGestureRecognizer*)gesture
 {
-    ITTDINFO(@"UISwipeGestureRecognizer direction %d", gesture.direction);
-    if (UISwipeGestureRecognizerDirectionRight == gesture.direction) 
+    if (UISwipeGestureRecognizerDirectionLeft == gesture.direction) 
+    {
+        [self nextMonth];
+    }
+    else 
     {
         [self previousMonth];
     }
-    else if (UISwipeGestureRecognizerDirectionLeft == gesture.direction) 
-    {
-        [self nextMonth];
-    }    
 }
 - (void) awakeFromNib
 {
     [super awakeFromNib];
     self.alpha = 0.0;
+    self.multipleTouchEnabled = TRUE;
+    self.gridScrollView.calendarDelegate = self;    
+    _allowsMultipleSelection = FALSE;
     _firstLayout = TRUE;
     _selectedPeriod = PeriodTypeAllDay;
     _minimumDate = [[NSDate date] retain];
     _minimumDay = [[CalDay alloc] initWithDate:_minimumDate];    
-    [self initParameters];    
+    _previousSelectedIndex.row = NSNotFound;
+    _previousSelectedIndex.column = NSNotFound;
+    [self initParameters];  
+    
     /*
      * add left and right swipe gesture 
      */
@@ -537,12 +738,37 @@
     UISwipeGestureRecognizer *rightSwipeGesture = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(swipe:)];
     rightSwipeGesture.direction = UISwipeGestureRecognizerDirectionRight;
     [self addGestureRecognizer:rightSwipeGesture];
-    [rightSwipeGesture release];    
-    
+    [rightSwipeGesture release];     
 }
 - (NSDate*)selectedDate
 {
     return _selectedDay.date;
+}
+- (NSArray*) selectedDateArray
+{
+    if (!_allowsMultipleSelection) 
+    {
+        return nil;
+    }
+    else
+    {
+        NSUInteger rows = [self getRows];
+        NSMutableArray *selectedDates = [NSMutableArray array];        
+        for (NSUInteger row = 0; row < rows; row++) 
+        {
+            for (NSUInteger column = 0; column < NUMBER_OF_DAYS_IN_WEEK; column++) 
+            {
+                if (_selectedIndicesMatrix[row][column]) 
+                {
+                    NSUInteger day = [self getMonthDayAtRow:row column:column];
+                    CalDay *calDay = [_calMonth calDayAtDay:day];    
+                    [selectedDates addObject:calDay.date];
+                    ITTDINFO(@"selected day %d", day);                    
+                }
+            }
+        }
+        return selectedDates;
+    }
 }
 + (id) viewFromNib
 {
@@ -550,6 +776,7 @@
 }
 - (void)dealloc 
 {
+    [self freeMatrix];
     [_minimumDate release];
     _minimumDate = nil;
     _delegate = nil;
@@ -611,13 +838,6 @@
 #pragma mark - CalendarGridViewDelegate
 - (void) calendarGridViewDidSelectGrid:(CalendarGridView*) gridView
 {
-    _selectedDay = [gridView.calDay retain];    
-    if (_selectedGridView) 
-    {
-        [_selectedGridView deselect];        
-    }
-    _selectedGridView = gridView;
-    [_selectedGridView select];
 }
 - (void) show
 {
@@ -668,5 +888,78 @@
         _parentView.alpha = 0.6;
         self.layer.zPosition = 3.0;        
     }];    
+}
+
+#pragma mark - CalendarScrollViewDelegate
+- (void) calendarSrollViewTouchesBegan:(CalendarScrollView*)calendarScrollView touches:(NSSet *)touches withEvent:(UIEvent *)event
+{
+    _moved = FALSE;    
+}
+- (void) calendarSrollViewTouchesMoved:(CalendarScrollView*)calendarScrollView touches:(NSSet *)touches withEvent:(UIEvent *)event
+{
+    _moved = TRUE;
+    GridIndex index = [self getGridViewIndex:calendarScrollView touches:touches];
+    if ([self isValidGridViewIndex:index]) 
+    {
+        if (_allowsMultipleSelection) 
+        {
+            BOOL selectedEnable = FALSE;
+            /*
+             * the grid is on unselected state
+             */
+            if (!_selectedIndicesMatrix[index.row][index.column]) 
+            {              
+                [self resetFoucsMatrix];
+                _foucsMatrix[index.row][index.column] = TRUE;                
+                selectedEnable = !_selectedIndicesMatrix[index.row][index.column];
+                selectedEnable = (selectedEnable & [self isGridViewSelectedEnableAtRow:index.row column:index.column]);
+                _selectedIndicesMatrix[index.row][index.column] = selectedEnable;                
+            }
+        }
+        else
+        {
+            //do nothing
+        }
+        _previousSelectedIndex = index;        
+        [self updateSelectedGridViewState];                            
+    }
+}
+
+- (void) calendarSrollViewTouchesEnded:(CalendarScrollView*)calendarScrollView touches:(NSSet *)touches withEvent:(UIEvent *)event
+{
+    GridIndex index = [self getGridViewIndex:calendarScrollView touches:touches];
+    if ([self isValidGridViewIndex:index]) 
+    {
+        BOOL selectedEnable = TRUE;        
+        if (!_moved) 
+        {
+            /*
+             * deselect the grid view
+             */
+            selectedEnable = _selectedIndicesMatrix[index.row][index.column];
+            _selectedIndicesMatrix[index.row][index.column] = !selectedEnable;
+            
+            if (!_allowsMultipleSelection) 
+            {
+                [self resetSelectedIndicesMatrix];
+                selectedEnable = selectedEnable & [self isGridViewSelectedEnableAtRow:index.row column:index.column];
+                _selectedIndicesMatrix[index.row][index.column] = selectedEnable;
+            }             
+            else
+            {
+            }
+        }
+        [self updateSelectedGridViewState];                            
+        if (!_allowsMultipleSelection) 
+        {
+            NSInteger day = [self getMonthDayAtRow:index.row column:index.column];                                
+            if (day >= 1 && day <= _calMonth.days) 
+            {
+                [_selectedDay release];
+                _selectedDay = nil;                
+                _selectedDay = [[_calMonth calDayAtDay:day] retain];                    
+            }        
+        }
+    }
 }
 @end

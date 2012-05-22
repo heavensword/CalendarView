@@ -58,20 +58,25 @@
 - (void) layoutSubviews
 {
     NSString *title = [NSString stringWithFormat:@"%d", [_calDay getDay]];
-    self.gridButton.selected = self.selected;      
-    self.gridButton.userInteractionEnabled = !self.selected;        
-    self.gridButton.userInteractionEnabled = _selectedEanable;      
     if (_selectedEanable) 
     {
+        self.gridButton.selected = self.selected;              
         [self.gridButton setTitleColor:RGBCOLOR(122, 119, 122) forState:UIControlStateNormal];   
     }
     else 
     {
+        self.gridButton.selected = FALSE;
         [self.gridButton setTitleColor:RGBCOLOR(233, 232, 231) forState:UIControlStateNormal];             
     }
     [self.gridButton setTitle:title forState:UIControlStateNormal];
 }
-- (void)dealloc {
+- (void) setSelected:(BOOL)selected
+{
+    _selected = selected;
+    [self setNeedsLayout];
+}
+- (void)dealloc 
+{
     [gridButton release];
     [super dealloc];
 }
