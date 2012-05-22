@@ -44,9 +44,9 @@
 						<reference key="NSWindow"/>
 						<reference key="NSNextKeyView" ref="1022665897"/>
 						<string key="NSReuseIdentifierKey">_NS:9</string>
-						<object class="NSColor" key="IBUIBackgroundColor" id="530311954">
+						<object class="NSColor" key="IBUIBackgroundColor" id="267677195">
 							<int key="NSColorSpace">3</int>
-							<bytes key="NSWhite">MQA</bytes>
+							<bytes key="NSWhite">MCAwAA</bytes>
 						</object>
 						<bool key="IBUIUserInteractionEnabled">NO</bool>
 						<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
@@ -63,10 +63,7 @@
 						<reference key="NSWindow"/>
 						<reference key="NSNextKeyView" ref="622360680"/>
 						<string key="NSReuseIdentifierKey">_NS:9</string>
-						<object class="NSColor" key="IBUIBackgroundColor" id="267677195">
-							<int key="NSColorSpace">3</int>
-							<bytes key="NSWhite">MCAwAA</bytes>
-						</object>
+						<reference key="IBUIBackgroundColor" ref="267677195"/>
 						<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 					</object>
 					<object class="IBUIScrollView" id="583779447">
@@ -75,8 +72,11 @@
 						<string key="NSFrame">{{7, 59}, {297, 187}}</string>
 						<reference key="NSSuperview" ref="954764873"/>
 						<reference key="NSWindow"/>
-						<reference key="NSNextKeyView"/>
 						<string key="NSReuseIdentifierKey">_NS:9</string>
+						<object class="NSColor" key="IBUIBackgroundColor">
+							<int key="NSColorSpace">3</int>
+							<bytes key="NSWhite">MQA</bytes>
+						</object>
 						<bool key="IBUIClipsSubviews">YES</bool>
 						<bool key="IBUIMultipleTouchEnabled">YES</bool>
 						<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
@@ -91,7 +91,7 @@
 								<string key="NSFrameSize">{297, 20}</string>
 								<reference key="NSSuperview" ref="622360680"/>
 								<reference key="NSWindow"/>
-								<reference key="NSNextKeyView" ref="122311826"/>
+								<reference key="NSNextKeyView"/>
 								<string key="NSReuseIdentifierKey">_NS:9</string>
 								<bool key="IBUIUserInteractionEnabled">NO</bool>
 								<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
@@ -126,7 +126,7 @@
 				<reference key="NSWindow"/>
 				<reference key="NSNextKeyView" ref="767213641"/>
 				<string key="NSReuseIdentifierKey">_NS:9</string>
-				<reference key="IBUIBackgroundColor" ref="530311954"/>
+				<reference key="IBUIBackgroundColor" ref="267677195"/>
 				<string key="targetRuntimeIdentifier">IBCocoaTouchFramework</string>
 			</object>
 		</array>
@@ -254,7 +254,7 @@
 			<nil key="activeLocalization"/>
 			<dictionary class="NSMutableDictionary" key="localizations"/>
 			<nil key="sourceID"/>
-			<int key="maxID">17</int>
+			<int key="maxID">18</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<array class="NSMutableArray" key="referencedPartialClassDescriptions">
@@ -271,7 +271,7 @@
 					<string key="superclassName">UIView</string>
 					<dictionary class="NSMutableDictionary" key="outlets">
 						<string key="footerView">UIView</string>
-						<string key="gridScrollView">UIScrollView</string>
+						<string key="gridScrollView">CalendarScrollView</string>
 						<string key="headerView">UIView</string>
 						<string key="weekHintView">UIView</string>
 					</dictionary>
@@ -282,7 +282,7 @@
 						</object>
 						<object class="IBToOneOutletInfo" key="gridScrollView">
 							<string key="name">gridScrollView</string>
-							<string key="candidateClassName">UIScrollView</string>
+							<string key="candidateClassName">CalendarScrollView</string>
 						</object>
 						<object class="IBToOneOutletInfo" key="headerView">
 							<string key="name">headerView</string>

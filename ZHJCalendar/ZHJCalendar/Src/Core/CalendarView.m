@@ -83,7 +83,7 @@
     _gridViewsArray = [[NSMutableArray alloc] init];  
     _monthGridViewsArray = [[NSMutableArray alloc] init];  
     _recyledGridSetDic = [[NSMutableDictionary alloc] init];
-    self.gridScrollView.backgroundColor = [UIColor whiteColor];
+//    self.gridScrollView.backgroundColor = [UIColor whiteColor];
     
     NSUInteger n = 6;
     _selectedIndicesMatrix = (bool**)malloc(sizeof(bool*)*n);
@@ -842,7 +842,6 @@
 - (void) show
 {
     [UIView animateWithDuration:0.4 animations:^{
-        self.layer.zPosition = 3.0;
         self.alpha = 1.0;
     }];
 }
@@ -851,7 +850,6 @@
     [UIView animateWithDuration:0.4 animations:^{
         self.alpha = 0.0;
         _parentView.alpha = 0.0;
-        self.layer.zPosition = -1.0;        
     }];      
 }
 - (void) showInView:(UIView*)view
@@ -886,7 +884,6 @@
     [UIView animateWithDuration:0.4 animations:^{
         self.alpha = 1.0;
         _parentView.alpha = 0.6;
-        self.layer.zPosition = 3.0;        
     }];    
 }
 
