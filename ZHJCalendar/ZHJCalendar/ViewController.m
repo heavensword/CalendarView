@@ -53,7 +53,6 @@
     [super viewDidLoad];
     _calendarView = [CalendarView viewFromNib];
     BaseDataSourceImp *dataSource = [[BaseDataSourceImp alloc] init];
-//    _calendarView.date = [NSDate dateWithTimeIntervalSinceNow:2*24*60*60];    
     _calendarView.dataSource = dataSource;
     _calendarView.delegate = self;
     _calendarView.frame = CGRectMake(8, 40, 309, 301);

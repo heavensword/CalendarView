@@ -32,6 +32,9 @@ CalendarViewHeaderViewDelegate, CalendarViewFooterViewDelegate, CalendarScrollVi
     BOOL                    _firstLayout;
     BOOL                    _allowsMultipleSelection;
     
+    NSTimeInterval          _beginTimeInterval;
+    CGPoint                 _beginPoint;
+    
     PeriodType              _selectedPeriod;    
     
     GridIndex               _previousSelectedIndex;
@@ -51,12 +54,11 @@ CalendarViewHeaderViewDelegate, CalendarViewFooterViewDelegate, CalendarScrollVi
     CalendarViewHeaderView  *_calendarHeaderView;  
     CalendarViewFooterView  *_calendarFooterView;    
     
-    UIView                  *_parentView;
+    UIView                  *_shieldView;
     
     NSMutableArray          *_gridViewsArray;                   //two-dimensional array
     NSMutableArray          *_monthGridViewsArray;
     NSMutableDictionary     *_recyledGridSetDic;    
-    NSMutableDictionary     *_selectedGridViewIndicesDic;
     
     id<CalendarViewDataSource>  _dataSource;
     id<CalendarViewDelegate>    _delegate;
