@@ -63,7 +63,7 @@
     _calendarView.delegate = self;
     _calendarView.frame = CGRectMake(8, 40, 309, 301);
     _calendarView.allowsMultipleSelection = TRUE;
-    _calendarView.maximumDate = [self theDateRelativeTodayWithInterval:20];
+    //_calendarView.maximumDate = [self theDateRelativeTodayWithInterval:20];
     [_calendarView showInView:self.view];
 }
 

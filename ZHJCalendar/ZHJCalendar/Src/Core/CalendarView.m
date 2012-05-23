@@ -17,7 +17,7 @@
 #define MARGIN_TOP                               9
 #define PADDING_VERTICAL                         5
 #define PADDING_HORIZONTAL                       3
-#define HORIZONTAL_SWIPE_HEIGHT_CONSTRAINT       60
+#define HORIZONTAL_SWIPE_HEIGHT_CONSTRAINT       80
 #define HORIZONTAL_SWIPE_WIDTH_CONSTRAINT        90
 #define SWIPE_TIMERINTERVAL                      0.3
 
