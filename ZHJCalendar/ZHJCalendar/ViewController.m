@@ -48,15 +48,22 @@
         ITTDINFO(@"selected date %@", [self stringFromFomate:calendarView.selectedDate formate:@"yyyy-MM-dd"]);        
     }
 }
+- (NSDate *)theDateRelativeTodayWithInterval:(NSInteger)interval
+{
+    return [NSDate dateWithTimeIntervalSinceNow:(24*60*60*interval)];
+}
+
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    NSLog(@"different ^ %d", FALSE^FALSE);
     _calendarView = [CalendarView viewFromNib];
     BaseDataSourceImp *dataSource = [[BaseDataSourceImp alloc] init];
     _calendarView.dataSource = dataSource;
     _calendarView.delegate = self;
     _calendarView.frame = CGRectMake(8, 40, 309, 301);
     _calendarView.allowsMultipleSelection = TRUE;
+    _calendarView.maximumDate = [self theDateRelativeTodayWithInterval:20];
     [_calendarView showInView:self.view];
 }
 

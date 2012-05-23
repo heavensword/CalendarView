@@ -23,6 +23,7 @@
 
 @interface CalendarView()
 
+@property (nonatomic, assign) CGSize gridSize;
 @property (retain, nonatomic) CalMonth *calMonth;
 
 @property (retain, nonatomic) IBOutlet UIView *weekHintView;
@@ -40,21 +41,33 @@
 - (void) addGridViewAtRow:(CalendarGridView*)gridView row:(NSUInteger) row column:(NSUInteger)column;
 
 - (BOOL) isGridViewSelectedEnableAtRow:(NSUInteger)row column:(NSUInteger) column;
-
+/*
+ * caculate rows of calendar view based on month
+ */
 - (NSUInteger) getRows;
+/*
+ * caculate month day based on row and column on calendar view
+ */
 - (NSUInteger) getMonthDayAtRow:(NSUInteger)row column:(NSUInteger)column;
-
+/*
+ * caculate grid view frame based on row and column on calendar view
+ */
 - (CGRect) getFrameForRow:(NSUInteger)row column:(NSUInteger)column;
 
 - (NSString*) findMonthDescription;
 
 - (NSArray*) findWeekTitles;
 
+/*
+ * @return:current day or first day of a month
+ */
+- (CalDay*) getFirstSelectedAvailableDay;
+
 - (CalendarViewHeaderView*) findHeaderView;
 - (CalendarViewFooterView*) findFooterview;
 
 - (CalendarGridView*) findGridViewAtRow:(NSUInteger)row column:(NSUInteger)column calDay:(CalDay*)calDay;
-- (CalendarGridView*) disableGridViewAtRow:(NSUInteger)row column:(NSUInteger)column calDay:(CalDay*)calDay;
+- (CalendarGridView*) findDisableGridViewAtRow:(NSUInteger)row column:(NSUInteger)column calDay:(CalDay*)calDay;
 - (CalendarGridView*) getGridViewAtRow:(NSUInteger) row column:(NSUInteger)column;
 
 @end
@@ -64,6 +77,7 @@
 @synthesize appear;
 @synthesize selectedDateArray;
 @synthesize selectedDate;
+@synthesize gridSize = _gridSize;
 @synthesize selectedPeriod = _selectedPeriod;
 @synthesize calMonth = _calMonth;
 @synthesize weekHintView = _weekHintView;
@@ -77,7 +91,6 @@
 @synthesize footerView = _footerView;
 @synthesize gridScrollView = _gridScrollView;
 @synthesize allowsMultipleSelection = _allowsMultipleSelection;
-@synthesize gridSize;
 
 - (void) initParameters
 {
@@ -155,14 +168,7 @@
     _calMonth = [calMonth retain];
     [_selectedDay release];
     _selectedDay = nil;    
-    if (_date) 
-    {
-        _selectedDay = [[CalDay alloc] initWithDate:_date];
-    }
-    else
-    {
-        _selectedDay = [[_calMonth firstDay] retain];            
-    }
+    _selectedDay = [[self getFirstSelectedAvailableDay] retain];
     _firstLayout = TRUE;    
     [self setNeedsLayout];
 }
@@ -327,7 +333,10 @@
         for (NSInteger column = 0; column < NUMBER_OF_DAYS_IN_WEEK; column++) 
         {
             gridView = [self getGridViewAtRow:row column:column];
-            if (!(gridView.selected & _selectedIndicesMatrix[row][column])) 
+            /*
+             * grid selected status and current seleted status are different
+             */
+            if (gridView.selected ^ _selectedIndicesMatrix[row][column]) 
             {
                 gridView.selected = _selectedIndicesMatrix[row][column];                
             }
@@ -414,7 +423,7 @@
         {
             calDay = [previousMonth calDayAtDay:day];
             column = [calDay getWeekDay] - 1;                        
-            gridView = [self disableGridViewAtRow:row column:column calDay:calDay];
+            gridView = [self findDisableGridViewAtRow:row column:column calDay:calDay];
             gridView.delegate = self;
             gridView.calDay = calDay;
             gridView.row = row;
@@ -479,7 +488,7 @@
         {
             calDay = [previousMonth calDayAtDay:day];
             column = [calDay getWeekDay] - 1;                        
-            gridView = [self disableGridViewAtRow:row column:column calDay:calDay];
+            gridView = [self findDisableGridViewAtRow:row column:column calDay:calDay];
             gridView.delegate = self;
             gridView.calDay = calDay;
             gridView.row = row;
@@ -498,6 +507,24 @@
     CGFloat y = MARGIN_TOP + (row - 1)*PADDING_VERTICAL + row*_gridSize.height;
     CGRect frame = CGRectMake(x, y, _gridSize.width, _gridSize.height);
     return frame;
+}
+- (CalDay*) getFirstSelectedAvailableDay
+{
+    CalDay *selectedCalDay = nil;
+    for (NSInteger day = 1; day <= _calMonth.days; day++)
+    {
+        CalDay *calDay = [_calMonth calDayAtDay:day];
+        if ([calDay isToday]) 
+        {
+            selectedCalDay = calDay;
+            break;
+        }
+    }
+    if (!selectedCalDay) 
+    {
+        selectedCalDay = [_calMonth firstDay];
+    }
+    return selectedCalDay;
 }
 - (CalendarViewHeaderView*) findHeaderView
 {
@@ -526,7 +553,7 @@
     }
     return gridView;
 }
-- (CalendarGridView*) disableGridViewAtRow:(NSUInteger)row column:(NSUInteger)column calDay:(CalDay*)calDay
+- (CalendarGridView*) findDisableGridViewAtRow:(NSUInteger)row column:(NSUInteger)column calDay:(CalDay*)calDay
 {
     CalendarGridView *gridView = nil;
     if (_dataSource && [_dataSource respondsToSelector:@selector(calendarView:calendarDisableGridViewForRow:column:calDay:)]) 

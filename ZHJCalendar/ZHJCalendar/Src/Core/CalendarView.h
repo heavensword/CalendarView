@@ -72,9 +72,6 @@ CalendarViewHeaderViewDelegate, CalendarViewFooterViewDelegate, CalendarScrollVi
  */
 @property (nonatomic, assign) BOOL allowsMultipleSelection;
 @property (nonatomic, assign) BOOL appear;
-
-@property (nonatomic, assign) CGSize gridSize;
-
 /*
  * default date is current date
  */
