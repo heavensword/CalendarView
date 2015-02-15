@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		507877F01A909ACA0059F232 /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 507877EF1A909ACA0059F232 /* Default-568h@2x.png */; };
 		E721EA7F15674517009DF710 /* bg_calendar@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = E721EA6515674517009DF710 /* bg_calendar@2x.png */; };
 		E721EA8015674517009DF710 /* bg_calendar_footer@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = E721EA6615674517009DF710 /* bg_calendar_footer@2x.png */; };
 		E721EA8115674517009DF710 /* bg_calendar_header@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = E721EA6715674517009DF710 /* bg_calendar_header@2x.png */; };
@@ -64,6 +65,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		507877EF1A909ACA0059F232 /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-568h@2x.png"; sourceTree = "<group>"; };
 		E721EA6515674517009DF710 /* bg_calendar@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "bg_calendar@2x.png"; sourceTree = "<group>"; };
 		E721EA6615674517009DF710 /* bg_calendar_footer@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "bg_calendar_footer@2x.png"; sourceTree = "<group>"; };
 		E721EA6715674517009DF710 /* bg_calendar_header@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "bg_calendar_header@2x.png"; sourceTree = "<group>"; };
@@ -261,6 +263,7 @@
 		E74B7F101536659600315E1A = {
 			isa = PBXGroup;
 			children = (
+				507877EF1A909ACA0059F232 /* Default-568h@2x.png */,
 				E74B7F251536659700315E1A /* ZHJCalendar */,
 				E74B7F1E1536659700315E1A /* Frameworks */,
 				E74B7F1C1536659700315E1A /* Products */,
@@ -339,7 +342,7 @@
 		E74B7F121536659600315E1A /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0430;
+				LastUpgradeCheck = 0620;
 				ORGANIZATIONNAME = itotemstudio;
 			};
 			buildConfigurationList = E74B7F151536659600315E1A /* Build configuration list for PBXProject "ZHJCalendar" */;
@@ -389,6 +392,7 @@
 				E721EA9315674517009DF710 /* btn_next_month@2x.png in Resources */,
 				E721EA9415674517009DF710 /* btn_next_month_highlight@2x.png in Resources */,
 				E721EA9515674517009DF710 /* btn_previous_month@2x.png in Resources */,
+				507877F01A909ACA0059F232 /* Default-568h@2x.png in Resources */,
 				E721EA9615674517009DF710 /* btn_previous_month_highlight@2x.png in Resources */,
 				E721EA9715674517009DF710 /* btn_radio_check_box@2x.png in Resources */,
 				E721EA9815674517009DF710 /* btn_radio_check_box_selected@2x.png in Resources */,
@@ -453,9 +457,16 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Scott Lee (DAJ23Z84KU)";
 				COPY_PHASE_STRIP = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -465,10 +476,14 @@
 				);
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 5.1;
+				ONLY_ACTIVE_ARCH = YES;
 				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "41ACC2B2-C355-4ACB-B2D3-7B59A5E1EAC8";
 				SDKROOT = iphoneos;
 			};
@@ -478,13 +493,23 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = YES;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 5.1;
 				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
@@ -499,7 +524,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "ZHJCalendar/ZHJCalendar-Prefix.pch";
 				INFOPLIST_FILE = "ZHJCalendar/ZHJCalendar-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 4.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = app;
 			};
@@ -511,7 +536,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "ZHJCalendar/ZHJCalendar-Prefix.pch";
 				INFOPLIST_FILE = "ZHJCalendar/ZHJCalendar-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 4.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = app;
 			};

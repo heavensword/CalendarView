@@ -10,7 +10,9 @@
 #import "BaseDataSourceImp.h"
 
 @interface ViewController ()
-
+{
+    BOOL    _viewIsFirstAppear;
+}
 @end
 
 @implementation ViewController
@@ -56,15 +58,26 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    NSLog(@"different ^ %d", FALSE^FALSE);
-    _calendarView = [CalendarView viewFromNib];
-    BaseDataSourceImp *dataSource = [[BaseDataSourceImp alloc] init];
-    _calendarView.dataSource = dataSource;
-    _calendarView.delegate = self;
-    _calendarView.frame = CGRectMake(8, 40, 309, 301);
-    _calendarView.allowsMultipleSelection = TRUE;
-    //_calendarView.maximumDate = [self theDateRelativeTodayWithInterval:20];
-    [_calendarView showInView:self.view];
+    _viewIsFirstAppear = TRUE;
+}
+
+- (void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+    if(_viewIsFirstAppear) {
+        _viewIsFirstAppear = FALSE;
+        NSLog(@"different ^ %d", FALSE^FALSE);
+        CGFloat height = 301;
+        CGFloat marginY = (CGRectGetHeight(self.view.bounds) - height) / 2;
+        _calendarView = [CalendarView viewFromNib];
+        BaseDataSourceImp *dataSource = [[BaseDataSourceImp alloc] init];
+        _calendarView.dataSource = dataSource;
+        _calendarView.delegate = self;
+        _calendarView.frame = CGRectMake(8, marginY, 309, height);
+        _calendarView.allowsMultipleSelection = TRUE;
+//        _calendarView.maximumDate = [self theDateRelativeTodayWithInterval:20];
+        [_calendarView showInView:self.view];
+    }
 }
 
 - (void)viewDidUnload
